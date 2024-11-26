@@ -1,29 +1,28 @@
-import http, { IncomingMessage, ServerResponse } from 'http'
+import http, { IncomingMessage, ServerResponse } from 'node:http'
 import { ParamsTypeDef, RequestBodyTypeDef } from './types/types'
 import { getParams } from './utils/helper'
 import { handleIncomingRequest } from './routes/index'
 import { closeDbConnection, createDbConnection } from '@database'
+import { loggerInst } from './utils/logger'
+import { middlewareManager } from './middlewares'
 
 const server = http.createServer((req: IncomingMessage, res: ServerResponse) => {
-  const { method, url } = req
-  let requestBody: RequestBodyTypeDef
-  let queryParams: ParamsTypeDef | undefined = {}
-  const body: Buffer[] = []
+  middlewareManager().applyMiddlewares(req, res, async (err) => {
+    if (err) {
+      loggerInst.error('Unhandled error:', err)
+      res.writeHead(500, { 'Content-Type': 'application/json' })
+      res.end(JSON.stringify({ error: 'Internal Server Error' }))
+      return
+    }
 
-  req.on('data', (reqBodyChunk: Buffer) => {
-    body.push(reqBodyChunk)
-  })
-
-  req.on('end', async () => {
     try {
-      queryParams = getParams(url as string)
-      const bodyData = Buffer.concat(body).toString()
-      requestBody = {
+      const { method, url, body, headers } = req
+      const requestBody: RequestBodyTypeDef = {
         endpoint: url?.split('?')[0] ?? '',
         method,
-        queryParams,
-        body: (bodyData && JSON.parse(bodyData)) ?? {},
-        headers: req.headers
+        queryParams: getParams(url as string) as ParamsTypeDef,
+        body,
+        headers
       }
 
       const response = await handleIncomingRequest(requestBody)
@@ -34,36 +33,35 @@ const server = http.createServer((req: IncomingMessage, res: ServerResponse) => 
       console.error('Error parsing request body:', error)
       res.writeHead(500, { 'Content-Type': 'application/json' })
       res.end('Internal Server Error\n')
-      return
     }
   })
 })
 
 server.listen(3000, () => {
-  console.log('Server running on port 3000')
+  loggerInst.info('Server running on port 3000')
 })
 
 server.on('listening', async () => {
   try {
     await createDbConnection()
-    console.log('Database Connected Successfully!')
+    loggerInst.info('Database Connected Successfully!')
   } catch (error) {
-    console.log('Error Connecting DB', error)
+    loggerInst.error('Error Connecting DB', { error })
   }
 })
 
 process.on('exit', async () => {
-  console.log('exit - Closing DB connection...')
+  loggerInst.info('exit - Closing DB connection...')
   await closeDbConnection()
   process.exit(0)
 })
 process.on('SIGINT', async () => {
-  console.log('SIGNINT - Closing DB connection...')
+  loggerInst.info('SIGNINT - Closing DB connection...')
   await closeDbConnection()
   process.exit(0)
 })
 process.on('SIGTERM', async () => {
-  console.log('SIGTERM - Closing DB connection...')
+  loggerInst.info('SIGTERM - Closing DB connection...')
   await closeDbConnection()
   process.exit(0)
 })

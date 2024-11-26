@@ -1,4 +1,4 @@
-import { IncomingHttpHeaders } from 'http'
+import { IncomingHttpHeaders, IncomingMessage, ServerResponse } from 'node:http'
 import { Document, InsertOneResult } from 'mongodb'
 import { HttpRequestMethods } from 'src/utils/constants'
 
@@ -14,9 +14,6 @@ export type ParamsTypeDef = {
 /**
  * Represents the Http incoming request payload.
  */
-export interface BodyTypeDef {
-  apiCode: string
-}
 
 /**
  * Represents the body of incoming Http reques.
@@ -25,7 +22,7 @@ export interface RequestBodyTypeDef {
   endpoint: string | undefined
   method: string | undefined
   queryParams?: ParamsTypeDef | undefined
-  body?: BodyTypeDef
+  body?: Record<string, string>
   headers?: IncomingHttpHeaders
 }
 
@@ -61,3 +58,19 @@ export interface ResponseTypeDef {
 }
 
 export type QueryResponseTypeDef = InsertOneResult<Document> | Record<string, unknown>[] | null
+
+export type MiddlewareTypeDef = (
+  req: IncomingMessage,
+  res: ServerResponse,
+  next: (err?: unknown) => void
+) => void
+
+export type LoggerMetaDataTypeDef = {
+  traceId: string
+  host: string
+  userAgent: string
+  endpoint: string
+  method: HttpMethodTypeDef
+  responseTime: number
+  error?: unknown | null
+}

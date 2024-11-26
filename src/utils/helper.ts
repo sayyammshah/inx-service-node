@@ -1,4 +1,5 @@
-import { ParamsTypeDef } from '../types/types'
+import { IncomingMessage } from 'node:http'
+import { LoggerMetaDataTypeDef, ParamsTypeDef } from '../types/types'
 
 /**
  * Extracts query parameters into an object.
@@ -33,4 +34,24 @@ export const getParams = (reqUrl: string): ParamsTypeDef | undefined => {
   }
 
   return params
+}
+
+const generateUUID = (): string => {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (char: string) => {
+    const random = (Math.random() * 16) | 0
+    const value = char === 'x' ? random : (random & 0x3) | 0x8
+    return value.toString(16)
+  })
+}
+
+export const getHeaders = (req: IncomingMessage): Partial<LoggerMetaDataTypeDef> => {
+  const traceId = (req.headers['x-correlation-id'] as string) || generateUUID()
+  const userAgent = req.headers['user-agent'] as string
+  const host = req.headers.host as string
+
+  return {
+    traceId,
+    userAgent,
+    host
+  } as Partial<LoggerMetaDataTypeDef>
 }
