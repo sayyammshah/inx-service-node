@@ -40,3 +40,7 @@ export const ENDPOINTS_V1 = {
     [HttpRequestMethods.GET]: Routes.InsightCreate
   }
 }
+
+export const TYPES = {
+  ERROR_RESPONSE: 'ErrorResponse'
+}

@@ -1,5 +1,3 @@
-// import * as http from 'node:http'
-
 import { LoggerMetaDataTypeDef } from './types'
 
 declare module 'http' {
@@ -8,3 +6,10 @@ declare module 'http' {
     customHeaders: Partial<LoggerMetaDataTypeDef>
   }
 }
+
+// declare global {
+//   interface ErrorOptions {
+//     cause?: unknown
+//     traceId: string
+//   }
+// }

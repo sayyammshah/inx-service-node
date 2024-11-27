@@ -2,9 +2,12 @@ import { Db } from 'mongodb'
 import { getDbInst } from '../config/connection.config'
 import { COLLECTIONS } from '../config/db.config'
 import { QueryResponseTypeDef } from 'src/types/types'
+import loggerInst from 'src/utils/logger'
+import { ResponseManager } from 'src/utils/responseHandler'
 
-export const FetchAll = async (): Promise<QueryResponseTypeDef> => {
+export const FetchAll = async ({ traceId }: { traceId: string }): Promise<QueryResponseTypeDef> => {
   let response: QueryResponseTypeDef = null
+  const { handleError } = new ResponseManager()
 
   try {
     const db: Db = getDbInst()
@@ -12,13 +15,10 @@ export const FetchAll = async (): Promise<QueryResponseTypeDef> => {
     const collection = db.collection(collectionName)
 
     response = await collection.find().toArray()
-    if (response.length > 0) {
-      console.log('Documents fetched successfully:', response)
-    } else {
-      console.log('Failed to fetch documents')
-    }
-  } catch (error) {
-    console.log(error)
+    if (response.length > 0) loggerInst.info(`${traceId}: Documents fetched successfully!`)
+    else loggerInst.info(`${traceId}: No documents found!`)
+  } catch (error: unknown) {
+    throw handleError(error, `${traceId}: Error occured in ${FetchAll.name}`)
   }
   return response
 }

@@ -21,6 +21,7 @@ export type ParamsTypeDef = {
 export interface RequestBodyTypeDef {
   endpoint: string | undefined
   method: string | undefined
+  traceId: string
   queryParams?: ParamsTypeDef | undefined
   body?: Record<string, string>
   headers?: IncomingHttpHeaders
@@ -46,15 +47,16 @@ export interface RouterConfigTypeDef {
 
 export type RouteConfigDetailsTypeDef = RouterConfigTypeDef['routes'][string][string]
 
+export type ErrorResponseTypeDef = {
+  message: string
+  cause: string
+  stack: string
+  statusCode?: number
+}
+
 export interface ResponseTypeDef {
-  result: {
-    data:
-      | { [key: string]: unknown }
-      | Array<{ [key: string]: unknown }>
-      | QueryResponseTypeDef
-      | null
-  } | null
-  error: Record<string, string> | null
+  data: unknown | null
+  error: ErrorResponseTypeDef | null
 }
 
 export type QueryResponseTypeDef = InsertOneResult<Document> | Record<string, unknown>[] | null

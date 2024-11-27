@@ -1,6 +1,7 @@
-import { ResponseHandler } from 'src/utils/responseHandler'
+import { ResponseManager } from 'src/utils/responseHandler'
 import { RequestBodyTypeDef, ResponseTypeDef, RouteConfigDetailsTypeDef } from '../types/types'
 import RouterConfig from './Routes'
+import loggerInst from 'src/utils/logger'
 
 /**
  * Handles the incoming request and routes it to the appropriate handler based on the provided endpoint and method.
@@ -13,9 +14,9 @@ import RouterConfig from './Routes'
  */
 export const handleIncomingRequest = async (requestBody: RequestBodyTypeDef) => {
   let response: ResponseTypeDef | null = null
-  const { handleResponse } = new ResponseHandler()
+  const { handleError } = new ResponseManager()
 
-  const { endpoint, method } = requestBody
+  const { endpoint, method, traceId } = requestBody
   const { routes } = RouterConfig
 
   try {
@@ -24,15 +25,13 @@ export const handleIncomingRequest = async (requestBody: RequestBodyTypeDef) => 
 
     if (requestHandler) {
       const { handler } = requestHandler
+      loggerInst.info(`${traceId}: Handler Invoked`)
       response = await handler(requestBody)
     } else {
-      response = handleResponse(undefined, {
-        message: 'Invalied API',
-        trace: handleIncomingRequest.name
-      })
+      throw handleError({}, `Not Found`, 404)
     }
   } catch (error) {
-    throw new Error('Invalid request', { cause: error })
+    throw handleError(error, `${traceId}: Invalid request ${handleIncomingRequest.name}`)
   }
 
   return response

@@ -1,4 +1,5 @@
 import { IncomingMessage, ServerResponse } from 'node:http'
+import { HttpRequestMethods } from 'src/utils/constants'
 import loggerInst from 'src/utils/logger'
 
 export default function bodyParser(
@@ -6,9 +7,12 @@ export default function bodyParser(
   res: ServerResponse,
   next: (err?: unknown) => void
 ) {
+  const { method } = req
+  if (method === HttpRequestMethods.GET || method === HttpRequestMethods.DELETE) next()
+
   const bufferBody: Buffer[] = []
 
-  loggerInst.info('ParserMiddleware called')
+  loggerInst.info('Request Body Parsing Initiated')
 
   try {
     req.on('data', (reqBodyChunk: Buffer) => {
@@ -18,6 +22,7 @@ export default function bodyParser(
       req.body = bufferBody.length > 0 ? JSON.parse(Buffer.concat(bufferBody).toString()) : {}
       next()
     })
+    loggerInst.info('Request body parsed successfully')
   } catch (error) {
     loggerInst.error(error)
     next(error)
