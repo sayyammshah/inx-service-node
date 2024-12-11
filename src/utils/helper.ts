@@ -1,5 +1,6 @@
-import { IncomingMessage } from 'node:http'
-import { LoggerMetaDataTypeDef, ParamsTypeDef } from '../types/types'
+import { ParamsTypeDef } from '../types/types'
+import Ajv, { ErrorObject, Schema, ValidateFunction } from 'ajv'
+import { ResponseManager } from './responseHandler'
 
 /**
  * Extracts query parameters into an object.
@@ -36,7 +37,7 @@ export const getParams = (reqUrl: string): ParamsTypeDef | undefined => {
   return params
 }
 
-const generateUUID = (): string => {
+export const generateUUID = (): string => {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (char: string) => {
     const random = (Math.random() * 16) | 0
     const value = char === 'x' ? random : (random & 0x3) | 0x8
@@ -44,14 +45,20 @@ const generateUUID = (): string => {
   })
 }
 
-export const getHeaders = (req: IncomingMessage): Partial<LoggerMetaDataTypeDef> => {
-  const traceId = (req.headers['x-correlation-id'] as string) || generateUUID()
-  const userAgent = req.headers['user-agent'] as string
-  const host = req.headers.host as string
+export const validateDocument = (
+  _document: unknown,
+  schema: Schema
+): { isValid: boolean; validationErrors: ErrorObject[] } => {
+  let validate: ValidateFunction
+  let isValid: boolean
 
-  return {
-    traceId,
-    userAgent,
-    host
-  } as Partial<LoggerMetaDataTypeDef>
+  const { handleError } = new ResponseManager()
+  try {
+    const ajv = new Ajv()
+    validate = ajv.compile(schema)
+    isValid = validate(_document)
+  } catch (error) {
+    throw handleError(error)
+  }
+  return { isValid, validationErrors: validate.errors || [] }
 }

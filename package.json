@@ -5,8 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "start": "node dist/server.js",
-    "build": "rimraf dist && tsc"
+    "build": "rm -r dist && tsc",
+    "start": "node --env-file=.env watch dist/server.js",
+    "cleanup": "rm -r dist && rm -r node_modules && rm -r logs"
   },
   "devDependencies": {
     "@eslint/js": "^9.15.0",
@@ -25,6 +26,7 @@
   "main": "src/server.ts",
   "author": "Sayyam",
   "dependencies": {
+    "ajv": "^8.17.1",
     "lodash": "^4.17.21",
     "mongodb": "^6.10.0",
     "winston": "^3.17.0"

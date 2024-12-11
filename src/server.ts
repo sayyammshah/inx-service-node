@@ -1,5 +1,11 @@
 import http, { IncomingMessage, ServerResponse } from 'node:http'
-import { ErrorResponseTypeDef, ParamsTypeDef, RequestBodyTypeDef } from './types/types'
+import {
+  ApiCodesType,
+  ErrorResponseTypeDef,
+  GlobalErrTypeDef,
+  ParamsTypeDef,
+  IncomingRequestBody
+} from './types/types'
 import { getParams } from './utils/helper'
 import { handleIncomingRequest } from './routes/index'
 import { closeDbConnection, createDbConnection } from '@database'
@@ -7,27 +13,33 @@ import { loggerInst } from './utils/logger'
 import { middlewareManager } from './middlewares'
 import { ResponseManager } from './utils/responseHandler'
 
+const PORT = process.env.PORT || 3001
+
 const server = http.createServer((req: IncomingMessage, res: ServerResponse) => {
-  middlewareManager().applyMiddlewares(req, res, async (err) => {
+  middlewareManager().applyMiddlewares(req, res, async (err: GlobalErrTypeDef | unknown) => {
+    const { generateErrorDto, handleError } = new ResponseManager()
+
     if (err) {
-      loggerInst.error('Error occured:', { error: err, traceId: req.customHeaders.traceId })
-      res.writeHead(500, { 'Content-Type': 'application/json' })
-      res.end(JSON.stringify({ error: 'Internal Server Error' }))
+      const { statusCode = 500, error = 'Internal Server Error' } = err as GlobalErrTypeDef
+
+      const sanitizedError = handleError(error, '', statusCode)
+      const generateBuffer = generateErrorDto(sanitizedError as ErrorResponseTypeDef)
+
+      loggerInst.error('Error occured:', { error: err, traceId: req.headers.traceId })
+      res.writeHead(sanitizedError.statusCode as number, { 'Content-Type': 'application/json' })
+      res.end(generateBuffer)
       return
     }
 
-    const { generateErrorResponse } = new ResponseManager()
-
     try {
-      const { method, url, body, headers, customHeaders } = req
-      const traceId = customHeaders.traceId as string
-      const requestBody: RequestBodyTypeDef = {
-        endpoint: url?.split('?')[0] ?? '',
-        method,
-        traceId,
+      const { url, body, headers } = req
+      const { traceId, apicode } = headers
+      const requestBody: IncomingRequestBody = {
+        traceId: traceId as string,
+        apiCode: apicode as ApiCodesType,
+        req,
         queryParams: getParams(url as string) as ParamsTypeDef,
-        body,
-        headers
+        body
       }
 
       const response = await handleIncomingRequest(requestBody)
@@ -35,16 +47,16 @@ const server = http.createServer((req: IncomingMessage, res: ServerResponse) => 
       res.writeHead(200, { 'Content-Type': 'application/json' })
       res.end(JSON.stringify(response))
     } catch (error) {
-      const data = generateErrorResponse(error as ErrorResponseTypeDef)
+      const errorResponse = generateErrorDto(error as ErrorResponseTypeDef)
       res.writeHead((error as ErrorResponseTypeDef).statusCode || 500, {
         'Content-Type': 'application/json'
       })
-      res.end(data)
+      res.end(errorResponse)
     }
   })
 })
 
-server.listen(3000, () => loggerInst.info('Server running on port 3000'))
+server.listen(PORT, () => loggerInst.info(`Server running on port ${PORT}`))
 server.on('listening', async () => await createDbConnection())
 
 process.on('exit', async () => {

@@ -16,15 +16,10 @@ export default [
         {
           patterns: [
             {
-              group: ['src/controllers/insights/*.controller.ts'],
+              group: ['src/controllers/insights/*'],
               message:
-                "Please import controllers using the '@controllers' alias, not directly from individual controller files."
+                "Please import components using the '@components' alias, not directly from individual components files."
             },
-            {
-              group: ['src/database/config/*.config.ts', 'src/database/queries/insert.query'],
-              message:
-                "Please import database utilities using the '@database' alias, not directly from respective files."
-            }
           ],
           paths: []
         }

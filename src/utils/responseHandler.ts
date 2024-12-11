@@ -4,7 +4,7 @@ class ResponseBody {
   data: unknown
   error: ErrorResponseTypeDef | null
   constructor(data: unknown, error: ErrorResponseTypeDef | null) {
-    this.data = data
+    this.data = data ?? null
     this.error = error
   }
 }
@@ -12,11 +12,9 @@ export class ErrorBody {
   constructor(
     public message: string,
     public cause: unknown,
-    public stack?: string | undefined,
     public statusCode?: number | undefined
   ) {
     this.message = message ?? 'Unknown error occurred'
-    this.stack = stack ?? ''
     this.cause = cause ?? ''
     this.statusCode = statusCode ?? 400
   }
@@ -32,15 +30,14 @@ export class ResponseManager {
     if (error instanceof ErrorBody) return error
     else {
       const newError: Error = new Error(message, {
-        cause: (error as Error).message
+        cause: (error as Error)?.message || error
       })
-      const stackTrace = statusCode === 404 ? '' : newError.stack
-      const errorBody = new ErrorBody(newError.message, newError.cause, stackTrace, statusCode)
+      const errorBody = new ErrorBody(newError.message, newError.cause, statusCode)
       return errorBody
     }
   }
 
-  generateErrorResponse(err: ErrorResponseTypeDef) {
+  generateErrorDto(err: ErrorResponseTypeDef) {
     const response = new ResponseBody(null, err)
     const buffer = Buffer.from(JSON.stringify(response))
     return buffer

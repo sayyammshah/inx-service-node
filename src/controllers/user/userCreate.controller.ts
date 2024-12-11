@@ -1,29 +1,28 @@
 import { COLLECTIONS, InsertOne } from '@database'
-import { insightCreateSchema } from '@schema'
-import { Document } from 'mongodb'
+import { userCreateSchema } from '@schema'
 import { QueryResponseTypeDef, IncomingRequestBody, ResponseTypeDef } from 'src/types/types'
 import { validateDocument } from 'src/utils/helper'
 import loggerInst from 'src/utils/logger'
 import { ResponseManager } from 'src/utils/responseHandler'
 
-export async function insightsCreateController(req: IncomingRequestBody): Promise<ResponseTypeDef> {
+export const userCreateController = async (req: IncomingRequestBody): Promise<ResponseTypeDef> => {
   const { handleResponse, handleError } = new ResponseManager()
   const { body: _document, traceId } = req
-  let queryResponse: QueryResponseTypeDef = null
+  let queryResponse: QueryResponseTypeDef | null = null
 
-  const { isValid, validationErrors } = validateDocument(_document, insightCreateSchema)
+  const { isValid, validationErrors } = validateDocument(_document, userCreateSchema)
   if (!isValid) throw handleError(validationErrors, `${traceId}: Invalid Document`, 400)
 
   try {
-    loggerInst.info(`${traceId}: Document Insertion Initialed`)
+    loggerInst.info(`${traceId}: User Document Insertion Initiated`)
     queryResponse = await InsertOne({
-      _document: _document as Document,
+      _document: _document as unknown as Document,
       traceId,
-      collectionName: COLLECTIONS.INSIGHTS
+      collectionName: COLLECTIONS.USER
     })
-    loggerInst.info(`${traceId}: Record Created Successfully!`)
+    loggerInst.info(`${traceId}: User Record Created Successfully!`)
   } catch (error: unknown) {
-    throw handleError(error, `${traceId}: Error occured in ${insightsCreateController.name}`)
+    throw handleError(error, `${traceId}: Error occured in ${userCreateController.name}`)
   }
   return handleResponse(queryResponse)
 }

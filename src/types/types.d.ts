@@ -1,6 +1,6 @@
-import { IncomingHttpHeaders, IncomingMessage, ServerResponse } from 'node:http'
-import { Document, InsertOneResult } from 'mongodb'
-import { HttpRequestMethods } from 'src/utils/constants'
+import { IncomingMessage, ServerResponse } from 'node:http'
+import { Document, InsertOneResult, WithId } from 'mongodb'
+import { API_CODES, HttpRequestMethods } from 'src/utils/constants'
 
 export type HttpMethodTypeDef = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
 
@@ -14,38 +14,31 @@ export type ParamsTypeDef = {
 /**
  * Represents the Http incoming request payload.
  */
-
-/**
- * Represents the body of incoming Http reques.
- */
-export interface RequestBodyTypeDef {
-  endpoint: string | undefined
-  method: string | undefined
+export interface IncomingRequestBody {
   traceId: string
+  apiCode: ApiCodesType
+  req: IncomingMessage
   queryParams?: ParamsTypeDef | undefined
   body?: Record<string, string>
-  headers?: IncomingHttpHeaders
 }
 
 /**
  * Represents the type defination of router config.
  */
-export interface RouterConfigTypeDef {
+export interface RouterConfigsTypeDef {
   version: string
   routes: {
     [key: string]: {
-      [key: string]: {
-        title: string
-        method: HttpRequestMethods
-        endpoint: string
-        auth: boolean
-        handler: (req: RequestBodyTypeDef) => Promise<ResponseTypeDef>
-      }
+      title: string
+      method: HttpRequestMethods
+      endpoint: string
+      auth: boolean
+      handler: (req: IncomingRequestBody) => Promise<ResponseTypeDef>
     }
   }
 }
 
-export type RouteConfigDetailsTypeDef = RouterConfigTypeDef['routes'][string][string]
+export type RouteConfigTypeDef = RouterConfigsTypeDef['routes'][string][string]
 
 export type ErrorResponseTypeDef = {
   message: string
@@ -59,7 +52,12 @@ export interface ResponseTypeDef {
   error: ErrorResponseTypeDef | null
 }
 
-export type QueryResponseTypeDef = InsertOneResult<Document> | Record<string, unknown>[] | null
+export type QueryResponseTypeDef =
+  | InsertOneResult<Document>
+  | Record<string, unknown>[]
+  | Document
+  | WithId<Document>
+  | null
 
 export type MiddlewareTypeDef = (
   req: IncomingMessage,
@@ -67,12 +65,41 @@ export type MiddlewareTypeDef = (
   next: (err?: unknown) => void
 ) => void
 
+export type ApiCodesType =
+  | API_CODES.INSIGHT_CREATE
+  | API_CODES.INSIGHT_GET_ALL
+  | API_CODES.USER_CREATE
+  | API_CODES.USER_LOGIN
+
 export type LoggerMetaDataTypeDef = {
   traceId: string
   host: string
   userAgent: string
   endpoint: string
   method: HttpMethodTypeDef
+  apiCode: ApiCodesType
   responseTime: number
   error?: unknown | null
+}
+
+export const enum ProjectionTypes {
+  InsightCreate = 'InsightCreate'
+}
+
+export type GlobalErrTypeDef = {
+  statusCode: number
+  error: string // custom message
+}
+
+export type BucketType = {
+  requestCnt: number
+  maxRequests: number
+  timeWindow: number // in seconds
+  expiry: number
+}
+
+export type RequestAuthPayload = {
+  username: string
+  email: string
+  expiry?: number
 }

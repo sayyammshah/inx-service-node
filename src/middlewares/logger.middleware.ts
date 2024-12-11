@@ -1,22 +1,22 @@
 import { IncomingMessage, ServerResponse } from 'node:http'
 import { performance } from 'node:perf_hooks'
+import { GlobalErrTypeDef } from 'src/types/types'
 import loggerInst from 'src/utils/logger'
 
 export default function requestLogger(
   req: IncomingMessage,
   res: ServerResponse,
-  next: (err?: unknown) => void
+  next: (err?: GlobalErrTypeDef | unknown) => void
 ) {
   try {
     const start = performance.now()
 
-    const { customHeaders, url, method } = req
-    const { traceId, userAgent, host } = customHeaders
+    const { headers, url, method } = req
 
     loggerInst.info('Processing Request', {
-      traceId,
-      host,
-      userAgent,
+      traceId: headers.traceId,
+      host: headers.host,
+      userAgent: headers['user-agent'],
       endpoint: url,
       method: method
     })
@@ -24,9 +24,9 @@ export default function requestLogger(
     res.on('finish', () => {
       const responseTime = `${(performance.now() - start).toFixed(2)} ms`
       loggerInst.info('Request Processed', {
-        traceId,
-        host,
-        userAgent,
+        traceId: headers.traceId,
+        host: headers.host,
+        userAgent: headers['user-agent'],
         endpoint: url,
         method: method,
         responseTime
@@ -35,6 +35,6 @@ export default function requestLogger(
     next()
   } catch (error) {
     loggerInst.error(error)
-    next(error)
+    next({ statusCode: 500, error })
   }
 }

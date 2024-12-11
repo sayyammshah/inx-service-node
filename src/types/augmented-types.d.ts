@@ -1,15 +1,8 @@
-import { LoggerMetaDataTypeDef } from './types'
-
 declare module 'http' {
   interface IncomingMessage {
     body: Record<string, string>
-    customHeaders: Partial<LoggerMetaDataTypeDef>
+  }
+  interface IncomingHttpHeaders {
+    traceId: string
   }
 }
-
-// declare global {
-//   interface ErrorOptions {
-//     cause?: unknown
-//     traceId: string
-//   }
-// }

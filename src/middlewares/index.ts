@@ -1,22 +1,27 @@
 import requestLogger from './logger.middleware'
 import bodyParser from './parser.middleware'
 import { IncomingMessage, ServerResponse } from 'node:http'
-import { MiddlewareTypeDef } from 'src/types/types'
-import { getHeaders } from 'src/utils/helper'
+import { GlobalErrTypeDef, MiddlewareTypeDef } from 'src/types/types'
 import loggerInst from 'src/utils/logger'
+import { limitRequest } from './rateLimit.middleware'
+import { cors } from './cors.middleware'
+import { generateUUID } from 'src/utils/helper'
 
 export const middlewareManager = () => {
-  const middlewares: MiddlewareTypeDef[] = [requestLogger, bodyParser]
+  // Sequence of is significant
+  const middlewares: MiddlewareTypeDef[] = [requestLogger, cors, limitRequest, bodyParser]
 
   const applyMiddlewares = (
     req: IncomingMessage,
     res: ServerResponse,
-    done: (err?: unknown) => void
+    done: (err?: GlobalErrTypeDef | unknown) => void
   ) => {
+    const { headers } = req
+    const { traceId } = headers
     let index = 0
 
-    req.customHeaders = getHeaders(req)
-    const next = (err?: unknown) => {
+    headers.traceId = traceId ? String(traceId).trim() : generateUUID()
+    const next = (err?: GlobalErrTypeDef | unknown) => {
       if (err) return done(err)
       if (index >= middlewares.length) return done()
 

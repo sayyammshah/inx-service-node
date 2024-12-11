@@ -22,3 +22,28 @@ export const FetchAll = async ({ traceId }: { traceId: string }): Promise<QueryR
   }
   return response
 }
+
+export const FetchById = async ({
+  traceId,
+  collectionName,
+  filter
+}: {
+  traceId: string
+  collectionName: string
+  filter: Record<string, string>
+}): Promise<QueryResponseTypeDef> => {
+  let response: QueryResponseTypeDef = null
+  const { handleError } = new ResponseManager()
+
+  try {
+    const db: Db = getDbInst()
+    const collection = db.collection(collectionName)
+
+    response = await collection.findOne(filter)
+    if (response) loggerInst.info(`${traceId}: Document fetched successfully!`)
+    else loggerInst.info(`${traceId}: No document found!`)
+  } catch (error: unknown) {
+    throw handleError(error, `${traceId}: Error occured in ${FetchById.name}`)
+  }
+  return response
+}
