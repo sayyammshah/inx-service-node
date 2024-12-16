@@ -1,4 +1,4 @@
-import { insightCreate, insightFetch, userCreate, userLogin } from '@controllers'
+import { insightCreate, insightFetch, insightUpdate, userCreate, userLogin } from '@controllers'
 import { RouterConfigsTypeDef } from 'src/types/types'
 import { API_CODES, BASE_V1, HttpRequestMethods } from '../utils/constants'
 
@@ -16,8 +16,15 @@ const RouterConfig: RouterConfigsTypeDef = {
       title: 'Get all Insights',
       method: HttpRequestMethods.GET,
       endpoint: BASE_V1.INSIGHTS,
-      auth: false,
+      auth: true,
       handler: insightFetch
+    },
+    [API_CODES.INSIGHT_UPDATE_ONE]: {
+      title: 'Update Insight',
+      method: HttpRequestMethods.PATCH,
+      endpoint: BASE_V1.INSIGHTS,
+      auth: true,
+      handler: insightUpdate
     },
     [API_CODES.USER_CREATE]: {
       title: 'Create User',

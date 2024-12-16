@@ -12,8 +12,9 @@ import { closeDbConnection, createDbConnection } from '@database'
 import { loggerInst } from './utils/logger'
 import { middlewareManager } from './middlewares'
 import { ResponseManager } from './utils/responseHandler'
+import 'dotenv/config'
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT
 
 const server = http.createServer((req: IncomingMessage, res: ServerResponse) => {
   middlewareManager().applyMiddlewares(req, res, async (err: GlobalErrTypeDef | unknown) => {

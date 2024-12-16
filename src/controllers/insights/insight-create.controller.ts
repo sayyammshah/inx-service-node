@@ -2,7 +2,7 @@ import { COLLECTIONS, InsertOne } from '@database'
 import { insightCreateSchema } from '@schema'
 import { Document } from 'mongodb'
 import { QueryResponseTypeDef, IncomingRequestBody, ResponseTypeDef } from 'src/types/types'
-import { validateDocument } from 'src/utils/helper'
+import { generateXId, validateDocument } from 'src/utils/helper'
 import loggerInst from 'src/utils/logger'
 import { ResponseManager } from 'src/utils/responseHandler'
 
@@ -15,9 +15,15 @@ export async function insightsCreateController(req: IncomingRequestBody): Promis
   if (!isValid) throw handleError(validationErrors, `${traceId}: Invalid Document`, 400)
 
   try {
-    loggerInst.info(`${traceId}: Document Insertion Initialed`)
+    const payload: Document = {
+      ..._document,
+      insightId: generateXId(),
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }
+    loggerInst.info(`${traceId}: Document Insertion Initialised`)
     queryResponse = await InsertOne({
-      _document: _document as Document,
+      _document: payload,
       traceId,
       collectionName: COLLECTIONS.INSIGHTS
     })

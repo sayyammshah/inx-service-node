@@ -20,9 +20,9 @@ export const loggerInst: Logger = winston.createLogger({
           return `${level}: [${timestamp}] ${message}${metadataString}`
         })
       )
-    }),
-    new winston.transports.File({ filename: './logs/error.log', level: 'error' }),
-    new winston.transports.File({ filename: './logs/combined.log' })
+    })
+    // new winston.transports.File({ filename: './logs/error.log', level: 'error' }),
+    // new winston.transports.File({ filename: './logs/combined.log' })
   ]
 })
 

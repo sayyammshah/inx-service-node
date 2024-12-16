@@ -1,6 +1,7 @@
 import { ParamsTypeDef } from '../types/types'
 import Ajv, { ErrorObject, Schema, ValidateFunction } from 'ajv'
 import { ResponseManager } from './responseHandler'
+import { randomBytes } from 'crypto'
 
 /**
  * Extracts query parameters into an object.
@@ -37,13 +38,13 @@ export const getParams = (reqUrl: string): ParamsTypeDef | undefined => {
   return params
 }
 
-export const generateUUID = (): string => {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (char: string) => {
-    const random = (Math.random() * 16) | 0
-    const value = char === 'x' ? random : (random & 0x3) | 0x8
-    return value.toString(16)
-  })
-}
+// export const generateUUID = (): string => {
+//   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (char: string) => {
+//     const random = (Math.random() * 16) | 0
+//     const value = char === 'x' ? random : (random & 0x3) | 0x8
+//     return value.toString(16)
+//   })
+// }
 
 export const validateDocument = (
   _document: unknown,
@@ -61,4 +62,8 @@ export const validateDocument = (
     throw handleError(error)
   }
   return { isValid, validationErrors: validate.errors || [] }
+}
+
+export const generateXId = (byteLength?: number): string => {
+  return `${randomBytes(byteLength ?? 8).toString('hex')}-${Date.now()}`
 }

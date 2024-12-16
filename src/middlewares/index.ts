@@ -5,7 +5,7 @@ import { GlobalErrTypeDef, MiddlewareTypeDef } from 'src/types/types'
 import loggerInst from 'src/utils/logger'
 import { limitRequest } from './rateLimit.middleware'
 import { cors } from './cors.middleware'
-import { generateUUID } from 'src/utils/helper'
+import { generateXId } from 'src/utils/helper'
 
 export const middlewareManager = () => {
   // Sequence of is significant
@@ -20,7 +20,7 @@ export const middlewareManager = () => {
     const { traceId } = headers
     let index = 0
 
-    headers.traceId = traceId ? String(traceId).trim() : generateUUID()
+    headers.traceId = traceId ? String(traceId).trim() : generateXId(16)
     const next = (err?: GlobalErrTypeDef | unknown) => {
       if (err) return done(err)
       if (index >= middlewares.length) return done()

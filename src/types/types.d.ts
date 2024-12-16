@@ -54,6 +54,7 @@ export interface ResponseTypeDef {
 
 export type QueryResponseTypeDef =
   | InsertOneResult<Document>
+  | UpdateResult<Document>
   | Record<string, unknown>[]
   | Document
   | WithId<Document>
@@ -102,4 +103,45 @@ export type RequestAuthPayload = {
   username: string
   email: string
   expiry?: number
+}
+
+// Models
+
+export type Reply = {
+  replyId: string
+  author: string
+  reply: string
+  createdAt: Date
+}
+export type Comment = {
+  commentId: string
+  author: string
+  topLevelComment: string
+  replies: Reply[]
+  createdAt: string
+}
+
+export interface InsightSchemaType {
+  userId: string
+  insightId: string
+  title: string
+  description: string
+  createdAt: string
+  updatedAt: string
+  upvotes: string
+  downvotes: string
+  media: string
+  comments: Comment[]
+}
+
+export type ActionHandlersParams = {
+  contentId: string
+  author: string
+  content: string
+}
+
+export interface ActionHandlerReturnValue {
+  filter: Filter<unknown>
+  payload: UpdateFilter<Document>
+  options: UpdateOptions
 }

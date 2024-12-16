@@ -25,8 +25,19 @@ export const StatusCodes = {
 export const enum API_CODES {
   INSIGHT_CREATE = 'InsightsCreate',
   INSIGHT_GET_ALL = 'InsightsGetAll',
+  INSIGHT_UPDATE_ONE = 'InsightUpdateOne',
   USER_CREATE = 'UserCreate',
   USER_LOGIN = 'UserLogin'
+}
+
+/**
+ * Enum containing action codes for insight updates.
+ *
+ * @enum {string}
+ */
+export enum ACTION_CODES {
+  UPDATE_REPLY = 'UpdateReply',
+  UPDATE_COMMENT = 'UpdateComment'
 }
 
 export const BASE_V1 = {
