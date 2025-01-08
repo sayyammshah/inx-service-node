@@ -1,12 +1,17 @@
 import { RequestAuthPayload } from 'src/types/types'
-import crypto, { randomBytes } from 'node:crypto'
+import crypto, { createHash, randomBytes } from 'node:crypto'
 import { ResponseManager } from './responseHandler'
 import loggerInst from './logger'
-import { TOKEN_ENCRYPTION_ALGORITHM, TOKEN_DELIMETER } from './constants'
+import {
+  TOKEN_ENCRYPTION_ALGORITHM,
+  TOKEN_DELIMETER,
+  PASSWORD_HASH_ENCRYPTION_ALGORITHM
+} from './constants'
 
 export const requestAuth = (): {
   generateToken: (_payload: RequestAuthPayload) => { token: string }
   decodeToken: (_token: string) => boolean
+  generatePasswordHash: (_password: string) => string
 } => {
   const { handleError } = new ResponseManager()
   const generateToken = (_payload: RequestAuthPayload): { token: string } => {
@@ -60,5 +65,11 @@ export const requestAuth = (): {
     return JSON.parse(payload) ? true : false
   }
 
-  return { generateToken, decodeToken }
+  const generatePasswordHash = (_password: string): string => {
+    let _hashedPassword = ''
+    _hashedPassword = createHash(PASSWORD_HASH_ENCRYPTION_ALGORITHM).update(_password).digest('hex')
+    return _hashedPassword
+  }
+
+  return { generateToken, decodeToken, generatePasswordHash }
 }

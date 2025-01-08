@@ -25,6 +25,7 @@ export const StatusCodes = {
 export const enum API_CODES {
   INSIGHT_CREATE = 'InsightsCreate',
   INSIGHT_GET_ALL = 'InsightsGetAll',
+  INSIGHT_GET_BY_ID = 'InsightsGetById',
   INSIGHT_UPDATE_ONE = 'InsightUpdateOne',
   USER_CREATE = 'UserCreate',
   USER_LOGIN = 'UserLogin'
@@ -74,6 +75,8 @@ export const PROJECTIONS = {
   [PROJECTION_TYPES.INSIGHT_READ]: ['_id', 'title', 'content', 'createdAt', 'updatedAt']
 }
 
-export const ALLOWED_ORIGINS = ['http://localhost:3001']
+export const ALLOWED_ORIGINS = ['http://localhost:3001', 'http://localhost:5173']
 export const TOKEN_ENCRYPTION_ALGORITHM = 'aes-256-gcm'
+export const PASSWORD_HASH_ENCRYPTION_ALGORITHM = 'md5'
 export const TOKEN_DELIMETER = '|'
+export const CORS_ALLOWED_HEADERS = ['apicode', 'content-type', 'authorization']
