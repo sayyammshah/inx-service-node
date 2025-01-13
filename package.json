@@ -11,6 +11,8 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.15.0",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
     "@types/lodash": "^4.17.13",
     "@types/mongodb": "^4.0.7",
     "@types/node": "^22.9.0",
@@ -26,7 +28,9 @@
   "author": "Sayyam",
   "dependencies": {
     "ajv": "^8.17.1",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.7",
+    "express": "^4.21.2",
     "lodash": "^4.17.21",
     "mongodb": "^6.10.0",
     "winston": "^3.17.0"

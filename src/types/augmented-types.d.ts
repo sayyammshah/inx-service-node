@@ -4,5 +4,6 @@ declare module 'http' {
   }
   interface IncomingHttpHeaders {
     traceId: string
+    apicode: string
   }
 }

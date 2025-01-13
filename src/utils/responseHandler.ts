@@ -37,8 +37,9 @@ export class ResponseManager {
     }
   }
 
-  generateErrorDto(err: ErrorResponseTypeDef) {
+  generateErrorDto(err: ErrorResponseTypeDef, convertToBuffer = false) {
     const response = new ResponseBody(null, err)
+    if (!convertToBuffer) return response
     const buffer = Buffer.from(JSON.stringify(response))
     return buffer
   }

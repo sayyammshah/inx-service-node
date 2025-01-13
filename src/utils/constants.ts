@@ -7,9 +7,9 @@ export enum HttpRequestMethods {
   POST = 'POST',
   PUT = 'PUT',
   PATCH = 'PATCH',
-  DELETE = 'DELETE'
+  DELETE = 'DELETE',
+  OPTIONS = 'OPTIONS'
 }
-
 export const StatusCodes = {
   OK: 200,
   CREATED: 201,
@@ -22,6 +22,7 @@ export const StatusCodes = {
   SERVER_ERROR: 500
 }
 
+// API Constants
 export const enum API_CODES {
   INSIGHT_CREATE = 'InsightsCreate',
   INSIGHT_GET_ALL = 'InsightsGetAll',
@@ -60,22 +61,33 @@ export const ENDPOINTS_V1 = {
     [HttpRequestMethods.GET]: Routes.InsightCreate
   }
 }
-
 export const TYPES = {
   ERROR_RESPONSE: 'ErrorResponse'
 }
 
+// Projections
 export const PROJECTION_TYPES = {
   INSIGHT_CREATE: 'InsightCreate',
   INSIGHT_READ: 'InsightRead'
 }
-
 export const PROJECTIONS = {
   [PROJECTION_TYPES.INSIGHT_CREATE]: ['acknowledged', 'insertedId'],
   [PROJECTION_TYPES.INSIGHT_READ]: ['_id', 'title', 'content', 'createdAt', 'updatedAt']
 }
 
+// CORS Config
 export const ALLOWED_ORIGINS = ['http://localhost:3001', 'http://localhost:5173']
+export const ALLOWED_HEADERS = ['Content-Type', 'Authorization', 'x-correlation-id', 'apiCode']
+export const ALLOWED_METHODS = [
+  HttpRequestMethods.GET,
+  HttpRequestMethods.POST,
+  HttpRequestMethods.PUT,
+  HttpRequestMethods.DELETE,
+  HttpRequestMethods.PATCH,
+  HttpRequestMethods.OPTIONS
+]
+
+// Secrets
 export const TOKEN_ENCRYPTION_ALGORITHM = 'aes-256-gcm'
 export const PASSWORD_HASH_ENCRYPTION_ALGORITHM = 'md5'
 export const TOKEN_DELIMETER = '|'

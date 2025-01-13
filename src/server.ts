@@ -1,65 +1,80 @@
-import http, { IncomingMessage, ServerResponse } from 'node:http'
+import { closeDbConnection, createDbConnection } from '@database'
+import cors, { CorsOptions } from 'cors'
+import 'dotenv/config'
+import express from 'express'
+import requestLogger from './middlewares/logger.middleware'
+import { handleIncomingRequest } from './routes'
 import {
   ApiCodesType,
   ErrorResponseTypeDef,
-  GlobalErrTypeDef,
-  ParamsTypeDef,
-  IncomingRequestBody
+  IncomingRequestBody,
+  ParamsTypeDef
 } from './types/types'
-import { getParams } from './utils/helper'
-import { handleIncomingRequest } from './routes/index'
-import { closeDbConnection, createDbConnection } from '@database'
+import { ALLOWED_HEADERS, ALLOWED_METHODS, ALLOWED_ORIGINS } from './utils/constants'
 import { loggerInst } from './utils/logger'
-import { middlewareManager } from './middlewares'
 import { ResponseManager } from './utils/responseHandler'
-import 'dotenv/config'
 
 const PORT = process.env.PORT
 
-const server = http.createServer((req: IncomingMessage, res: ServerResponse) => {
-  middlewareManager().applyMiddlewares(req, res, async (err: GlobalErrTypeDef | unknown) => {
-    const { generateErrorDto, handleError } = new ResponseManager()
+const app = express()
 
-    if (err) {
-      const { statusCode = 500, error = 'Internal Server Error' } = err as GlobalErrTypeDef
-
-      const sanitizedError = handleError(error, '', statusCode)
-      const generateBuffer = generateErrorDto(sanitizedError as ErrorResponseTypeDef)
-
-      loggerInst.error('Error occured:', { error: err, traceId: req.headers.traceId })
-      res.writeHead(sanitizedError.statusCode as number, { 'Content-Type': 'application/json' })
-      res.end(generateBuffer)
-      return
+// Middlewares
+app.use(requestLogger)
+app.use(
+  cors((req, callback) => {
+    let corsOptions: CorsOptions = {
+      origin: false,
+      methods: '',
+      allowedHeaders: []
     }
-
-    try {
-      const { url, body, headers } = req
-      const { traceId, apicode } = headers
-      const requestBody: IncomingRequestBody = {
-        traceId: traceId as string,
-        apiCode: apicode as ApiCodesType,
-        req,
-        queryParams: getParams(url as string) as ParamsTypeDef,
-        body
+    if (ALLOWED_ORIGINS.indexOf(req.headers.origin as string) !== -1)
+      corsOptions = {
+        origin: true,
+        methods: ALLOWED_METHODS,
+        allowedHeaders: ALLOWED_HEADERS
       }
+    callback(null, corsOptions)
+  })
+)
+app.use(express.json({ limit: '10mb' }))
 
-      const response = await handleIncomingRequest(requestBody)
-
-      res.writeHead(200, { 'Content-Type': 'application/json' })
-      res.end(JSON.stringify(response))
-    } catch (error) {
-      const errorResponse = generateErrorDto(error as ErrorResponseTypeDef)
-      res.writeHead((error as ErrorResponseTypeDef).statusCode || 500, {
-        'Content-Type': 'application/json'
-      })
-      res.end(errorResponse)
-    }
+// Routes
+app.get('/api/v1/health-check', (req, res) => {
+  res.json({
+    message: 'Server health check - Working fine'
   })
 })
+app.all('/api/v1/*', async (req, res) => {
+  const { generateErrorDto } = new ResponseManager()
+  try {
+    const requestBody: IncomingRequestBody = {
+      req,
+      traceId: req.headers['x-correlation-id'] as string,
+      apiCode: req.headers.apicode as ApiCodesType,
+      queryParams: req.query as ParamsTypeDef,
+      body: req.body
+    }
 
-server.listen(PORT, () => loggerInst.info(`Server running on port ${PORT}`))
-server.on('listening', async () => await createDbConnection())
+    const reponse = await handleIncomingRequest(requestBody)
+    res.json(reponse)
+  } catch (error) {
+    loggerInst.error('Error occured:', error)
+    const errorResponse = generateErrorDto(error as ErrorResponseTypeDef)
+    res.json(errorResponse)
+  }
+})
 
+// Server Setup
+app.listen(PORT, async () => {
+  loggerInst.info(`Server running on port ${PORT}`)
+  try {
+    await createDbConnection()
+  } catch (error) {
+    loggerInst.error('Error occured:', error)
+  }
+})
+
+// Graceful shutdown
 process.on('exit', async () => {
   loggerInst.info('exit - Closing DB connection...')
   await closeDbConnection()
