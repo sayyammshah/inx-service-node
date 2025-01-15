@@ -1,5 +1,4 @@
-import { COLLECTIONS } from '@database'
-import { FetchById } from 'src/database/queries/fetch.query'
+import { COLLECTIONS, FetchById } from '@database'
 import { QueryResponseTypeDef, IncomingRequestBody, ResponseTypeDef } from 'src/types/types'
 import { requestAuth } from 'src/utils/auth'
 import { ResponseManager } from 'src/utils/responseHandler'
@@ -10,6 +9,8 @@ export const loginUserController = async (req: IncomingRequestBody): Promise<Res
   const { email, password } = body || {}
   let response: QueryResponseTypeDef = null
   const filter = { email }
+
+  if (!email || !password) throw handleError(null, `${traceId}: Missing email or password`)
 
   try {
     response = await FetchById({ traceId, collectionName: COLLECTIONS.USER, filter })
