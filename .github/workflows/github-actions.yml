@@ -20,6 +20,6 @@ jobs:
         run: npm run test
       - name: Building Application
         run: npm run build
-      - name: Running Application
-        run: npm run start
+      # - name: Running Application
+      #   run: npm run start
       - run: echo "This job's status is ${{ job.status }}."
