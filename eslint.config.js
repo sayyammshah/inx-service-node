@@ -1,11 +1,12 @@
 import globals from 'globals'
 import pluginJs from '@eslint/js'
 import tseslint from 'typescript-eslint'
+import tsParser from '@typescript-eslint/parser'
 
 /** @type {import('eslint').Linter.Config[]} */
 export default [
   { files: ['**/*.{js,mjs,cjs,ts}'] },
-  { languageOptions: { globals: globals.browser } },
+  { languageOptions: { parser: tsParser, globals: globals.browser } },
   {
     rules: {
       eqeqeq: 'off',
@@ -16,10 +17,10 @@ export default [
         {
           patterns: [
             {
-              group: ['src/controllers/insights/*'],
+              group: ['**/database/*', 'src/database/*'],
               message:
-                "Please import components using the '@components' alias, not directly from individual components files."
-            },
+                "Relative path imports are not allowed. Please use the '@database' alias instead."
+            }
           ],
           paths: []
         }

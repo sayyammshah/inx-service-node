@@ -19,3 +19,4 @@ build/
 
 # Other
 .DS_Store
+coverage
