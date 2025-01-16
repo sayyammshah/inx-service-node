@@ -1,7 +1,7 @@
 import { ServerResponse } from 'http'
 import { IncomingMessage } from 'http'
 import { BucketType, GlobalErrTypeDef } from 'src/types/types'
-import loggerInst from 'src/utils/logger'
+import loggerInst from '../utils/logger'
 
 const DEFAULT_RATE_LIMIT_CONFIG = {
   requestCnt: 1,

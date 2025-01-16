@@ -2,9 +2,9 @@ import { COLLECTIONS, InsertOne } from '@database'
 import { insightCreateSchema } from '@schema'
 import { Document } from 'mongodb'
 import { QueryResponseTypeDef, IncomingRequestBody, ResponseTypeDef } from 'src/types/types'
-import { generateXId, validateDocument } from 'src/utils/helper'
-import loggerInst from 'src/utils/logger'
-import { ResponseManager } from 'src/utils/responseHandler'
+import { generateXId, validateDocument } from '../../utils/helper'
+import loggerInst from '../../utils/logger'
+import { ResponseManager } from '../../utils/responseHandler'
 
 export async function insightsCreateController(req: IncomingRequestBody): Promise<ResponseTypeDef> {
   const { handleResponse, handleError } = new ResponseManager()

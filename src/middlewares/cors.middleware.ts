@@ -1,8 +1,8 @@
 import { ServerResponse } from 'http'
 import { IncomingMessage } from 'http'
 import { GlobalErrTypeDef } from 'src/types/types'
-import { ALLOWED_ORIGINS, CORS_ALLOWED_HEADERS } from 'src/utils/constants'
-import loggerInst from 'src/utils/logger'
+import { ALLOWED_ORIGINS, CORS_ALLOWED_HEADERS } from '../utils/constants'
+import loggerInst from '../utils/logger'
 
 export const cors = (
   req: IncomingMessage,

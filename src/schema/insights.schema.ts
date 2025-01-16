@@ -1,5 +1,5 @@
 import { Schema } from 'ajv'
-import { ACTION_CODES } from 'src/utils/constants'
+import { ACTION_CODES } from '../utils/constants'
 
 export const schema: Schema = {
   type: 'object',

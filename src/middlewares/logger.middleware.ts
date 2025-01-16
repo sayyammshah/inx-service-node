@@ -1,7 +1,7 @@
 import { IncomingMessage, ServerResponse } from 'node:http'
 import { performance } from 'node:perf_hooks'
 import { GlobalErrTypeDef } from 'src/types/types'
-import loggerInst from 'src/utils/logger'
+import loggerInst from '../utils/logger'
 
 export default function requestLogger(
   req: IncomingMessage,

@@ -9,9 +9,9 @@ import {
   ActionHandlersParams,
   ActionHandlerReturnValue
 } from 'src/types/types'
-import { validateDocument } from 'src/utils/helper'
-import loggerInst from 'src/utils/logger'
-import { ResponseManager } from 'src/utils/responseHandler'
+import { validateDocument } from '../../utils/helper'
+import loggerInst from '../../utils/logger'
+import { ResponseManager } from '../../utils/responseHandler'
 import { actionHandlers } from './insight-update.helper'
 
 export async function insightsUpdateController(req: IncomingRequestBody): Promise<ResponseTypeDef> {

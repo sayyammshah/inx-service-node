@@ -1,5 +1,5 @@
 import { QueryResponseTypeDef, ResponseTypeDef } from 'src/types/types'
-import { ResponseManager } from 'src/utils/responseHandler'
+import { ResponseManager } from '../../utils/responseHandler'
 
 export const generateRandomUser = async (): Promise<ResponseTypeDef> => {
   const { handleResponse, handleError } = new ResponseManager()

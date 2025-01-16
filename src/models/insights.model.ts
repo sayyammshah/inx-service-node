@@ -1,4 +1,4 @@
-import { ACTION_CODES } from 'src/utils/constants'
+import { ACTION_CODES } from '../utils/constants'
 
 // Update Comments and Replies
 

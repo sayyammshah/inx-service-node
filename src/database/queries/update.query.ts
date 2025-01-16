@@ -1,6 +1,6 @@
 import { Document, Filter, UpdateFilter, UpdateOptions, UpdateResult } from 'mongodb'
 import { QueryResponseTypeDef } from 'src/types/types'
-import loggerInst from 'src/utils/logger'
+import loggerInst from '../../utils/logger'
 import { getDbInst } from '../config/connection.config'
 
 /**

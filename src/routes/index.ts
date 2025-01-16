@@ -1,7 +1,7 @@
-import { ResponseManager } from 'src/utils/responseHandler'
+import { ResponseManager } from '../utils/responseHandler'
 import { IncomingRequestBody, ResponseTypeDef, RouteConfigTypeDef } from '../types/types'
 import RouterConfig from './Routes'
-import loggerInst from 'src/utils/logger'
+import loggerInst from '../utils/logger'
 
 /**
  * Handles the incoming request and routes it to the appropriate handler based on the provided endpoint and method.

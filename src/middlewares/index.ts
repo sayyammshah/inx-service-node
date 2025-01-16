@@ -2,10 +2,10 @@ import requestLogger from './logger.middleware'
 import bodyParser from './parser.middleware'
 import { IncomingMessage, ServerResponse } from 'node:http'
 import { GlobalErrTypeDef, MiddlewareTypeDef } from 'src/types/types'
-import loggerInst from 'src/utils/logger'
+import loggerInst from '../utils/logger'
 import { limitRequest } from './rateLimit.middleware'
 import { cors } from './cors.middleware'
-import { generateXId } from 'src/utils/helper'
+import { generateXId } from '../utils/helper'
 
 export const middlewareManager = () => {
   // Sequence of is significant

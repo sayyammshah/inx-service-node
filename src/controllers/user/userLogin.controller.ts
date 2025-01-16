@@ -1,7 +1,7 @@
 import { COLLECTIONS, FetchById } from '@database'
 import { QueryResponseTypeDef, IncomingRequestBody, ResponseTypeDef } from 'src/types/types'
-import { requestAuth } from 'src/utils/auth'
-import { ResponseManager } from 'src/utils/responseHandler'
+import { requestAuth } from '../../utils/auth'
+import { ResponseManager } from '../../utils/responseHandler'
 
 export const loginUserController = async (req: IncomingRequestBody): Promise<ResponseTypeDef> => {
   const { handleResponse, handleError } = new ResponseManager()

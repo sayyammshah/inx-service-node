@@ -2,8 +2,8 @@ import { Db } from 'mongodb'
 import { getDbInst } from '../config/connection.config'
 import { COLLECTIONS } from '../config/db.config'
 import { QueryResponseTypeDef } from 'src/types/types'
-import loggerInst from 'src/utils/logger'
-import { ResponseManager } from 'src/utils/responseHandler'
+import loggerInst from '../../utils/logger'
+import { ResponseManager } from '../../utils/responseHandler'
 
 export const FetchAll = async ({ traceId }: { traceId: string }): Promise<QueryResponseTypeDef> => {
   let response: QueryResponseTypeDef = null

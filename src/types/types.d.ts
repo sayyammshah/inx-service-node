@@ -1,6 +1,6 @@
 import { IncomingMessage, ServerResponse } from 'node:http'
 import { Document, InsertOneResult, WithId } from 'mongodb'
-import { API_CODES, HttpRequestMethods } from 'src/utils/constants'
+import { API_CODES, HttpRequestMethods } from '../utils/constants'
 
 export type HttpMethodTypeDef = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
 

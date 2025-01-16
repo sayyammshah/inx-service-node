@@ -1,8 +1,7 @@
-import { COLLECTIONS, FetchAll } from '@database'
-import { FetchById } from 'src/database/queries/fetch.query'
+import { COLLECTIONS, FetchAll, FetchById } from '@database'
 import { QueryResponseTypeDef, IncomingRequestBody, ResponseTypeDef } from 'src/types/types'
-import { requestAuth } from 'src/utils/auth'
-import { ResponseManager } from 'src/utils/responseHandler'
+import { requestAuth } from '../../utils/auth'
+import { ResponseManager } from '../../utils/responseHandler'
 
 export async function insightsFetchController(req: IncomingRequestBody): Promise<ResponseTypeDef> {
   const { handleResponse, handleError } = new ResponseManager()

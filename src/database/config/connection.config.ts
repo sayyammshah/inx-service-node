@@ -1,6 +1,6 @@
 import { MongoClient, Db } from 'mongodb'
 import { DB_NAME, URI } from './db.config'
-import loggerInst from 'src/utils/logger'
+import loggerInst from '../../utils/logger'
 
 const client = new MongoClient(URI)
 let dbInstance: Db | null = null

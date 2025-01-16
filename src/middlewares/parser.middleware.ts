@@ -1,6 +1,6 @@
 import { IncomingMessage, ServerResponse } from 'node:http'
 import { GlobalErrTypeDef } from 'src/types/types'
-import loggerInst from 'src/utils/logger'
+import loggerInst from '../utils/logger'
 
 export default function bodyParser(
   req: IncomingMessage,

@@ -29,10 +29,12 @@ export class ResponseManager {
   handleError(error: unknown, message?: string, statusCode?: number) {
     if (error instanceof ErrorBody) return error
     else {
-      const newError: Error = new Error(message, {
-        cause: (error as Error)?.message || error
-      })
-      const errorBody = new ErrorBody(newError.message, newError.cause, statusCode)
+      const newError: Error = new Error(message)
+      const errorBody = new ErrorBody(
+        newError.message,
+        (error as Error)?.message || error,
+        statusCode
+      )
       return errorBody
     }
   }

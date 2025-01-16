@@ -1,9 +1,9 @@
 import { COLLECTIONS, InsertOne } from '@database'
 import { userCreateSchema } from '@schema'
 import { QueryResponseTypeDef, IncomingRequestBody, ResponseTypeDef } from 'src/types/types'
-import { validateDocument } from 'src/utils/helper'
-import loggerInst from 'src/utils/logger'
-import { ResponseManager } from 'src/utils/responseHandler'
+import { validateDocument } from '../../utils/helper'
+import loggerInst from '../../utils/logger'
+import { ResponseManager } from '../../utils/responseHandler'
 
 export const userCreateController = async (req: IncomingRequestBody): Promise<ResponseTypeDef> => {
   const { handleResponse, handleError } = new ResponseManager()

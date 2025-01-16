@@ -1,8 +1,8 @@
 import { InsightUpdateActionCodes } from '@models'
 import { Filter, UpdateFilter, UpdateOptions } from 'mongodb'
 import { ActionHandlerReturnValue, ActionHandlersParams } from 'src/types/types'
-import { ACTION_CODES } from 'src/utils/constants'
-import { generateXId } from 'src/utils/helper'
+import { ACTION_CODES } from '../../utils/constants'
+import { generateXId } from '../../utils/helper'
 
 const updateCommentParams = ({ author, content, contentId }: ActionHandlersParams) => {
   const filter: Filter<unknown> = {
