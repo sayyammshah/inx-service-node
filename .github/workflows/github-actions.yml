@@ -16,6 +16,10 @@ jobs:
           # cache: 'npm'
       - name: Installing dependencies
         run: npm install
-      - name: Running CI
-        run: npm run ci
+      - name: Running Test Cases
+        run: npm run test
+      - name: Building Application
+        run: npm run build
+      - name: Running Application
+        run: npm run start
       - run: echo "This job's status is ${{ job.status }}."
